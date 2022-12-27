@@ -1,0 +1,86 @@
+<form id="form" >
+    <input required name="nome" placeholder="Nome" type="text"/>
+    <input required name="sobrenome" placeholder="Sobrenome" type="text"/>
+    <input required name="email" placeholder="E-mail" type="email"/>
+    <button type="submit">Enviar</button>
+</form>
+
+
+
+
+<script>
+    let result = {}
+    
+
+    function convertFormToJSON(form) {
+        return $(form)
+            .serializeArray()
+            .reduce(function (json, { name, value }) {
+                json[name] = value;
+                return json;
+            }, {});
+    }
+
+    
+    
+    $( "#form" ).submit(function(e) {
+        e.preventDefault()
+        const data = convertFormToJSON('#form');
+        console.log(data)
+        let dataArr = $("form").serializeArray()
+        $.ajax({
+            type: "POST",
+            url: 'http://138.68.29.250:8082/',
+            data,
+            contentType: 'application/x-www-form-urlencoded',
+            async:false,
+            success: function(res){
+                var parsed = []
+                res.slice(0, -1).split('#').forEach((item, index) => {
+                    if(index % 2 == 0){
+                        parsed.push({[item]: res.split('#')[index + 1]})
+                    }
+                })
+                parsed.map((i, ind) => {
+                    dataArr.map((j, ind2) => {     
+                        if(Object.keys(i)[0] == j.name[0]){
+                            dataArr[ind2].cod = Object.values(i)[0]
+                        }
+                    })
+                    
+                })
+
+                
+                
+                jsonArr = JSON.stringify({"data":dataArr})
+                console.log(JSON.parse(jsonArr))
+                
+                $.ajax({
+                    type: "POST",
+                    url: 'http://localhost:3000/api',
+                    data: jsonArr, 
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    async:false,
+                    success: function(res){
+                        console.log(res)
+                        //apply style to result div
+                        $('#result-div').css({
+                            "display": 'flex',
+                            "flex-direction": 'column',
+                            "align-items": 'center',
+                            "justify-content": 'center'
+                        })
+                        Object.keys(res).map((i, ind) => {
+                            $('#result').append(`<li>${i}: ${res[i]}</li>`)
+                        })
+                        
+                    },
+                    error: function(err){
+                        console.log(err)
+                    }
+                })
+            },
+        });
+    });
+</script>
