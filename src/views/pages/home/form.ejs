@@ -1,17 +1,20 @@
-<form id="form" >
-    <input required name="nome" placeholder="Nome" type="text"/>
-    <input required name="sobrenome" placeholder="Sobrenome" type="text"/>
-    <input required name="email" placeholder="E-mail" type="email"/>
-    <button type="submit">Enviar</button>
-</form>
 
+<div id="form-container">
+    <form id="form" >
+        <input required name="nome" placeholder="Nome" type="text"/>
+        <input required name="sobrenome" placeholder="Sobrenome" type="text"/>
+        <input required name="email" placeholder="E-mail" type="email"/>
+        <button id="sbmt-btn" type="submit">Enviar</button>
+    </form>    
+    <div hidden=true class="loader"></div>
+    <%- include('results'); %>
+</div>
 
 
 
 <script>
     let result = {}
     
-
     function convertFormToJSON(form) {
         return $(form)
             .serializeArray()
@@ -21,13 +24,24 @@
             }, {});
     }
 
-    
-    
+    $(document).on({
+        ajaxStart: function () {                                
+            $('.loader').show()                                   
+        },
+        ajaxStop: function() {
+            $('.loader').hide()                   
+        }
+    }); 
+
     $( "#form" ).submit(function(e) {
+        $('.loader').show()
         e.preventDefault()
+        $('.loader').show()
         const data = convertFormToJSON('#form');
         console.log(data)
         let dataArr = $("form").serializeArray()
+        $('#result').empty()
+        $('.loader').show() 
         $.ajax({
             type: "POST",
             url: 'http://138.68.29.250:8082/',
@@ -48,10 +62,7 @@
                         }
                     })
                     
-                })
-
-                
-                
+                }) 
                 jsonArr = JSON.stringify({"data":dataArr})
                 console.log(JSON.parse(jsonArr))
                 
@@ -64,7 +75,6 @@
                     async:false,
                     success: function(res){
                         console.log(res)
-                        //apply style to result div
                         $('#result-div').css({
                             "display": 'flex',
                             "flex-direction": 'column',
@@ -74,7 +84,7 @@
                         Object.keys(res).map((i, ind) => {
                             $('#result').append(`<li>${i}: ${res[i]}</li>`)
                         })
-                        
+                        $('.loader').hide()
                     },
                     error: function(err){
                         console.log(err)
