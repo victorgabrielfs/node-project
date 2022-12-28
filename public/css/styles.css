@@ -58,8 +58,15 @@ form input {
     border-radius: 5px;
 }
 
-ul {
-    list-style-type: none;
+#result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+}
+#result p {
+    margin: 0
 }
 
 .loader {
