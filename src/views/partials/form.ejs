@@ -82,7 +82,7 @@
                             "justify-content": 'center'
                         })
                         Object.keys(res).map((i, ind) => {
-                            $('#result').append(`<p>${i}: ${res[i]}</p>`)
+                            $('#result').append(`<p>${i.charAt(0).toUpperCase() + i.slice(1)}: ${res[i]}</p>`)
                         })
                         $('.loader').hide()
                     },
